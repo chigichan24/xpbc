@@ -42,7 +42,7 @@ if [ -z "$VERSION" ]; then
   echo "Error: version not found in the artifact bundle." >&2
   exit 1
 fi
-if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+if ! echo "$VERSION" | grep -qE '^v?[0-9]+\.[0-9]+\.[0-9]+$'; then
   echo "Error: unexpected version format: $VERSION" >&2
   exit 1
 fi
