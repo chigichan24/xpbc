@@ -5,6 +5,7 @@ public enum XPBCError: LocalizedError {
     case inputTooLarge(size: Int, maxMB: Int)
     case pasteboardWriteFailed
     case invalidArgument(String)
+    case validationFailed(format: String, reason: String)
 
     public var errorDescription: String? {
         switch self {
@@ -17,6 +18,8 @@ public enum XPBCError: LocalizedError {
             return "Failed to write to pasteboard"
         case .invalidArgument(let arg):
             return "Invalid argument: \(arg)"
+        case .validationFailed(let format, let reason):
+            return "Invalid \(format) data: \(reason)"
         }
     }
 }

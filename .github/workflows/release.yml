@@ -6,6 +6,9 @@ on:
 
 permissions:
   contents: write
+  packages: none
+  issues: none
+  pull-requests: none
 
 jobs:
   build-and-release:
@@ -28,8 +31,12 @@ jobs:
       - name: Create artifact bundle
         run: ./Scripts/release-artifactbundle.sh "${{ env.TAG_NAME }}"
 
+      - name: Generate checksums
+        run: shasum -a 256 xpbc-macos.artifactbundle.zip > checksums.txt
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
             xpbc-macos.artifactbundle.zip
+            checksums.txt

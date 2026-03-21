@@ -23,14 +23,30 @@ public struct PasteboardWriter: Sendable {
     }
 
     private func decodeText(from data: Data) -> String {
+        let decoded: String
         if let utf8 = String(data: data, encoding: .utf8) {
-            return utf8
+            decoded = utf8
         } else {
             FileHandle.standardError.write(
                 Data("xpbc: warning: input is not valid UTF-8, falling back to Latin-1\n".utf8)
             )
             // Latin-1 can decode any byte sequence, so this never returns nil
-            return String(data: data, encoding: .isoLatin1)!
+            decoded = String(data: data, encoding: .isoLatin1)!
+        }
+        return stripControlCharacters(decoded)
+    }
+
+    /// Strip C0 control characters (except tab, newline, carriage return) and DEL
+    /// to prevent terminal escape sequence injection.
+    /// Checks all Unicode scalars in each Character to handle multi-scalar graphemes.
+    func stripControlCharacters(_ text: String) -> String {
+        text.filter { ch in
+            ch.unicodeScalars.allSatisfy { scalar in
+                let v = scalar.value
+                if v == 0x09 || v == 0x0A || v == 0x0D { return true }
+                if v < 0x20 || v == 0x7F { return false }
+                return true
+            }
         }
     }
 

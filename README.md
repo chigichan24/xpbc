@@ -47,7 +47,7 @@ make install PREFIX=~/.local
 ## Usage
 
 ```
-xpbc [-pboard {general|ruler|find|font}] [--help] [--version]
+xpbc [-pboard {general|ruler|find|font}] [--no-validate] [--help] [--version]
 ```
 
 Pipe any data into `xpbc` via stdin. It automatically detects the format and copies accordingly.
@@ -90,7 +90,7 @@ Anything that doesn't match a known image signature is copied as text.
 | Code | Meaning |
 |------|---------|
 | 0    | Success |
-| 1    | Known error (empty input, input too large, invalid argument, pasteboard write failure) |
+| 1    | Known error (empty input, input too large, invalid argument, validation failure, pasteboard write failure) |
 | 2    | Unexpected error |
 
 ### Options
@@ -98,6 +98,7 @@ Anything that doesn't match a known image signature is copied as text.
 | Flag | Description |
 |------|-------------|
 | `-pboard NAME` | Target pasteboard: `general` (default), `ruler`, `find`, or `font` |
+| `--no-validate` | Skip structural validation of image headers |
 | `-h`, `--help` | Print usage |
 | `-v`, `--version` | Print version |
 
@@ -118,6 +119,17 @@ make clean            # Clean build artifacts
 - Input size is capped at 100 MB (read in 64 KB chunks to prevent OOM)
 - stdin-only input (no file path arguments, no path traversal risk)
 - Written in memory-safe Swift with no `Unsafe` pointer usage
+- Structural validation of image headers is enabled by default (use `--no-validate` to skip)
+
+### Important limitations
+
+**xpbc does not guarantee the safety of clipboard contents.** While structural validation checks that image headers are well-formed, it cannot detect:
+
+- **Crafted exploit payloads** — A structurally valid image (valid headers, correct dimensions) can still contain malicious data that exploits vulnerabilities in the application where you paste it (e.g., heap overflows in image decoders like libwebp, ImageIO).
+- **Decompression bombs** — An image with valid headers but compressed data that expands to an extreme size, causing the paste target to crash with out-of-memory.
+- **PDF active content** — While xpbc blocks PDFs containing known dangerous keywords (`/JS`, `/JavaScript`, `/OpenAction`, `/AA`, `/Launch`), obfuscated or novel techniques may bypass this check.
+
+**Do not pipe untrusted data** (e.g., `curl <untrusted-url> | xpbc`) **without understanding the risk.** The clipboard contents will be processed by whatever application you paste into, and xpbc cannot protect against vulnerabilities in those applications.
 
 ## Architecture
 
