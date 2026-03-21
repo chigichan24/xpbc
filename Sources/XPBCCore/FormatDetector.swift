@@ -1,6 +1,6 @@
 import Foundation
 
-enum DataType: Equatable, Sendable {
+public enum DataType: Equatable, Sendable {
     case png
     case jpeg
     case gif
@@ -13,7 +13,7 @@ enum DataType: Equatable, Sendable {
     case text
 }
 
-protocol FormatDetector: Sendable {
+public protocol FormatDetector: Sendable {
     var detectedType: DataType { get }
     func canDetect(from data: Data) -> Bool
 }

@@ -1,12 +1,12 @@
 import Foundation
 
-enum XPBCError: LocalizedError {
+public enum XPBCError: LocalizedError {
     case emptyInput
     case inputTooLarge(Int)
     case pasteboardWriteFailed
     case invalidArgument(String)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .emptyInput:
             return "No input data"
@@ -21,11 +21,11 @@ enum XPBCError: LocalizedError {
     }
 }
 
-struct StdinReader: Sendable {
-    static let maxInputSize: Int = 100 * 1024 * 1024
-    static let maxInputSizeMB: Int = 100
+public struct StdinReader: Sendable {
+    public static let maxInputSize: Int = 100 * 1024 * 1024
+    public static let maxInputSizeMB: Int = 100
 
-    static func read() throws -> Data {
+    public static func read() throws -> Data {
         let data = FileHandle.standardInput.readDataToEndOfFile()
         if data.isEmpty {
             throw XPBCError.emptyInput

@@ -1,7 +1,7 @@
 import Foundation
 
-struct DataTypeDetector: Sendable {
-    static let detectors: [FormatDetector] = [
+public struct DataTypeDetector: Sendable {
+    public static let detectors: [FormatDetector] = [
         PNGDetector(),
         JPEGDetector(),
         GIFDetector(),
@@ -13,7 +13,7 @@ struct DataTypeDetector: Sendable {
         BMPDetector(),
     ]
 
-    static func detect(from data: Data) -> DataType {
+    public static func detect(from data: Data) -> DataType {
         for detector in detectors {
             if detector.canDetect(from: data) {
                 return detector.detectedType
