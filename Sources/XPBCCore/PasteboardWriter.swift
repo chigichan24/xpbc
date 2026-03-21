@@ -55,7 +55,7 @@ public struct PasteboardWriter: Sendable {
         case .pdf:
             return .pdf
         case .text:
-            return .string
+            preconditionFailure("pasteboardType(for:) must not be called with .text")
         }
     }
 }
