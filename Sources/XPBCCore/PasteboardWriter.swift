@@ -10,34 +10,29 @@ public struct PasteboardWriter: Sendable {
 
     public func write(_ data: Data, as type: DataType) throws {
         let pasteboard = NSPasteboard(name: pasteboardName)
-        pasteboard.clearContents()
 
         switch type {
         case .text:
-            try writeText(data, to: pasteboard)
+            let text = try decodeText(from: data)
+            pasteboard.clearContents()
+            guard pasteboard.setString(text, forType: .string) else {
+                throw XPBCError.pasteboardWriteFailed
+            }
         case .png, .jpeg, .gif, .tiff, .bmp, .webp, .heic, .avif, .pdf:
-            try writeImage(data, as: type, to: pasteboard)
+            let pbType = pasteboardType(for: type)
+            pasteboard.clearContents()
+            guard pasteboard.setData(data, forType: pbType) else {
+                throw XPBCError.pasteboardWriteFailed
+            }
         }
     }
 
-    private func writeText(_ data: Data, to pasteboard: NSPasteboard) throws {
-        let text: String
+    private func decodeText(from data: Data) throws -> String {
         if let utf8 = String(data: data, encoding: .utf8) {
-            text = utf8
+            return utf8
         } else if let latin1 = String(data: data, encoding: .isoLatin1) {
-            text = latin1
+            return latin1
         } else {
-            throw XPBCError.pasteboardWriteFailed
-        }
-
-        guard pasteboard.setString(text, forType: .string) else {
-            throw XPBCError.pasteboardWriteFailed
-        }
-    }
-
-    private func writeImage(_ data: Data, as type: DataType, to pasteboard: NSPasteboard) throws {
-        let pasteboardType = pasteboardType(for: type)
-        guard pasteboard.setData(data, forType: pasteboardType) else {
             throw XPBCError.pasteboardWriteFailed
         }
     }
