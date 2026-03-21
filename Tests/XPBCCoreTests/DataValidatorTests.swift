@@ -312,12 +312,46 @@ struct DataValidatorTests {
         #expect(DataValidator.validate(data, as: .png) != .valid)
     }
 
+    @Test func ftyp_boxSizeJustBelowMinimum_fails() {
+        // boxSize == 11: one below the minimum of 12
+        var data = Data([0x00, 0x00, 0x00, 0x0B]) // size = 11
+        data.append(contentsOf: [0x66, 0x74, 0x79, 0x70]) // "ftyp"
+        data.append(contentsOf: [0x68, 0x65, 0x69]) // 3 bytes (total 11)
+        #expect(DataValidator.validate(data, as: .heic) != .valid)
+    }
+
     @Test func ftyp_exactMinimumBoxSize_passes() {
         // boxSize == 12, data.count == 12 (header 8 + major brand 4)
         var data = Data([0x00, 0x00, 0x00, 0x0C]) // size = 12
         data.append(contentsOf: [0x66, 0x74, 0x79, 0x70]) // "ftyp"
         data.append(contentsOf: [0x68, 0x65, 0x69, 0x63]) // "heic" (major brand)
         #expect(DataValidator.validate(data, as: .heic) == .valid)
+    }
+
+    // MARK: - stripControlCharacters
+
+    @Test func stripControlCharacters_removesESC() {
+        let writer = PasteboardWriter()
+        let result = writer.stripControlCharacters("hello\u{1B}[31mworld")
+        #expect(result == "hello[31mworld")
+    }
+
+    @Test func stripControlCharacters_preservesTabNewlineCR() {
+        let writer = PasteboardWriter()
+        let input = "line1\tvalue\nline2\r\n"
+        #expect(writer.stripControlCharacters(input) == input)
+    }
+
+    @Test func stripControlCharacters_removesNUL() {
+        let writer = PasteboardWriter()
+        #expect(writer.stripControlCharacters("a\u{0000}b") == "ab")
+    }
+
+    @Test func stripControlCharacters_multiScalarGrapheme_passes() {
+        let writer = PasteboardWriter()
+        // "é" as e + combining acute accent (multi-scalar Character)
+        let input = "caf\u{0065}\u{0301}"
+        #expect(writer.stripControlCharacters(input) == input)
     }
 
     // MARK: - Text (no validation)
