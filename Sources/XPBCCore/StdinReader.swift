@@ -2,7 +2,7 @@ import Foundation
 
 public struct StdinReader: Sendable {
     public static let maxInputSize: Int = 100 * 1024 * 1024
-    public static let maxInputSizeMB: Int = 100
+    public static var maxInputSizeMB: Int { maxInputSize / (1024 * 1024) }
 
     public static func read() throws -> Data {
         let data = FileHandle.standardInput.readDataToEndOfFile()
