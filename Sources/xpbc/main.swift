@@ -59,7 +59,10 @@ func run() throws {
 
 do {
     try run()
-} catch {
+} catch let error as XPBCError {
     printError(error.localizedDescription)
     exit(1)
+} catch {
+    printError("unexpected error: \(error)")
+    exit(2)
 }
