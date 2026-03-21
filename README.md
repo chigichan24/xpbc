@@ -1,5 +1,7 @@
 # xpbc
 
+[![Test](https://github.com/chigichan24/xpbc/actions/workflows/test.yml/badge.svg)](https://github.com/chigichan24/xpbc/actions/workflows/test.yml)
+
 **eXtended PasteBoard Copy** — a drop-in enhancement for macOS `pbcopy` that supports images.
 
 `pbcopy` only handles text. `xpbc` automatically detects whether stdin contains image data and copies it to the clipboard as an image. For plain text, it behaves exactly like `pbcopy`.
@@ -18,6 +20,19 @@ echo "hello" | xpbc
 
 ## Installation
 
+### Pre-built binary
+
+Download the latest universal binary (arm64 + x86_64) from [Releases](https://github.com/chigichan24/xpbc/releases):
+
+```sh
+# Download and extract
+curl -LO https://github.com/chigichan24/xpbc/releases/latest/download/xpbc-macos.artifactbundle.zip
+unzip xpbc-macos.artifactbundle.zip
+
+# Copy to your PATH
+cp xpbc.artifactbundle/xpbc-*/bin/xpbc /usr/local/bin/
+```
+
 ### From source
 
 Requires Swift 6.0+ and macOS 13+.
@@ -32,13 +47,6 @@ This installs the binary to `/usr/local/bin`. To change the install location:
 
 ```sh
 make install PREFIX=~/.local
-```
-
-### Manual
-
-```sh
-swift build -c release
-cp .build/release/xpbc /usr/local/bin/
 ```
 
 ## Usage
@@ -101,9 +109,10 @@ Anything that doesn't match a known image signature is copied as text.
 ## Building & Testing
 
 ```sh
-make build    # Release build
-make test     # Run tests
-make clean    # Clean build artifacts
+make build            # Release build (host architecture)
+make build-universal  # Release build (arm64 + x86_64)
+make test             # Run tests
+make clean            # Clean build artifacts
 ```
 
 ## Security
