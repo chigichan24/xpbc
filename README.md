@@ -30,7 +30,14 @@ curl -LO https://github.com/chigichan24/xpbc/releases/latest/download/xpbc-macos
 unzip xpbc-macos.artifactbundle.zip
 
 # Copy to your PATH
-cp xpbc.artifactbundle/xpbc-*/bin/xpbc /usr/local/bin/
+mkdir -p ~/.local/bin
+cp xpbc.artifactbundle/xpbc-*/bin/xpbc ~/.local/bin/
+```
+
+Make sure `~/.local/bin` is in your `PATH`. If not, add to your shell profile:
+
+```sh
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ### From source
@@ -40,12 +47,6 @@ Requires Swift 6.0+ and macOS 13+.
 ```sh
 git clone https://github.com/chigichan24/xpbc.git
 cd xpbc
-make install
-```
-
-This installs the binary to `/usr/local/bin`. To change the install location:
-
-```sh
 make install PREFIX=~/.local
 ```
 
