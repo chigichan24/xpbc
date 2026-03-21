@@ -31,6 +31,9 @@ public struct PasteboardWriter: Sendable {
         if let utf8 = String(data: data, encoding: .utf8) {
             return utf8
         } else if let latin1 = String(data: data, encoding: .isoLatin1) {
+            FileHandle.standardError.write(
+                Data("xpbc: warning: input is not valid UTF-8, falling back to Latin-1\n".utf8)
+            )
             return latin1
         } else {
             throw XPBCError.pasteboardWriteFailed
