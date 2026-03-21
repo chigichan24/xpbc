@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 import XPBCCore
 
-let version = "0.1.0"
+let version = "0.2.0"
 
 func printUsage() {
     let usage = """
