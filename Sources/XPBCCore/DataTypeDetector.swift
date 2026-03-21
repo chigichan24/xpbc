@@ -7,8 +7,8 @@ public struct DataTypeDetector: Sendable {
         GIFDetector(),
         TIFFDetector(),
         WebPDetector(),
-        HEICDetector(),
-        AVIFDetector(),
+        FtypDetector(detectedType: .heic, brand: [0x68, 0x65, 0x69, 0x63]),
+        FtypDetector(detectedType: .avif, brand: [0x61, 0x76, 0x69, 0x66]),
         PDFDetector(),
         BMPDetector(),
     ]
