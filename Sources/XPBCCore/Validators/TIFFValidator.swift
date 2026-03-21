@@ -7,19 +7,23 @@ struct TIFFValidator: FormatValidator {
         }
 
         let isLittleEndian = data[data.startIndex] == 0x49 // 'I'
-        let ifdOffset: UInt32
+        let ifdOffset: UInt32?
         if isLittleEndian {
-            ifdOffset = readLittleEndianUInt32(data, offset: 4)
+            ifdOffset = data.readLittleEndianUInt32(at: 4)
         } else {
-            ifdOffset = readBigEndianUInt32(data, offset: 4)
+            ifdOffset = data.readBigEndianUInt32(at: 4)
         }
 
-        guard ifdOffset >= 8 else {
-            return .invalid(reason: "IFD offset \(ifdOffset) is less than minimum (8)")
+        guard let offset = ifdOffset else {
+            return .invalid(reason: "unable to read IFD offset")
         }
 
-        guard ifdOffset < data.count else {
-            return .invalid(reason: "IFD offset \(ifdOffset) exceeds data size \(data.count)")
+        guard offset >= 8 else {
+            return .invalid(reason: "IFD offset \(offset) is less than minimum (8)")
+        }
+
+        guard Int(offset) < data.count else {
+            return .invalid(reason: "IFD offset \(offset) exceeds data size \(data.count)")
         }
 
         return .valid

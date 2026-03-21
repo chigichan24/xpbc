@@ -1,6 +1,6 @@
 import Foundation
 
-public enum DataType: Equatable, Sendable {
+public enum DataType: Equatable, Sendable, CustomStringConvertible {
     case png
     case jpeg
     case gif
@@ -11,6 +11,21 @@ public enum DataType: Equatable, Sendable {
     case avif
     case pdf
     case text
+
+    public var description: String {
+        switch self {
+        case .png: return "PNG"
+        case .jpeg: return "JPEG"
+        case .gif: return "GIF"
+        case .tiff: return "TIFF"
+        case .bmp: return "BMP"
+        case .webp: return "WebP"
+        case .heic: return "HEIC"
+        case .avif: return "AVIF"
+        case .pdf: return "PDF"
+        case .text: return "text"
+        }
+    }
 }
 
 protocol FormatDetector: Sendable {

@@ -2,17 +2,18 @@ import Foundation
 
 struct FtypValidator: FormatValidator {
     func validate(_ data: Data) -> ValidationResult {
-        // ftyp box: first 4 bytes = box size (big-endian UInt32)
-        guard data.count >= 8 else {
-            return .invalid(reason: "too short for ftyp box (need >= 8 bytes)")
+        guard let boxSize = data.readBigEndianUInt32(at: 0) else {
+            return .invalid(reason: "too short for ftyp box (need >= 4 bytes)")
         }
 
-        let boxSize = readBigEndianUInt32(data, offset: 0)
+        // Per ISO BMFF, boxSize == 0 means "box extends to EOF" and boxSize == 1 means
+        // "64-bit extended size follows". Both are valid but rejected here for simplicity
+        // since typical ftyp boxes have a concrete small size.
         guard boxSize >= 8 else {
             return .invalid(reason: "ftyp box size \(boxSize) is less than minimum (8)")
         }
 
-        guard boxSize <= data.count else {
+        guard Int(boxSize) <= data.count else {
             return .invalid(reason: "ftyp box size \(boxSize) exceeds data size \(data.count)")
         }
 

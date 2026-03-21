@@ -5,11 +5,10 @@ struct BMPValidator: FormatValidator {
 
     func validate(_ data: Data) -> ValidationResult {
         // BMP file header is 14 bytes, then DIB header starts with its size (LE u32)
-        guard data.count >= 18 else {
+        guard let dibSize = data.readLittleEndianUInt32(at: 14) else {
             return .invalid(reason: "too short for DIB header size (need >= 18 bytes)")
         }
 
-        let dibSize = readLittleEndianUInt32(data, offset: 14)
         guard Self.validDIBSizes.contains(dibSize) else {
             return .invalid(reason: "invalid DIB header size \(dibSize)")
         }

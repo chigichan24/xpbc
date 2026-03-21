@@ -12,14 +12,12 @@ struct PNGValidator: FormatValidator {
             return .invalid(reason: "first chunk is not IHDR")
         }
 
-        let width = readBigEndianUInt32(data, offset: 16)
-        guard width > 0 else {
-            return .invalid(reason: "width is 0")
+        guard let width = data.readBigEndianUInt32(at: 16), width > 0 else {
+            return .invalid(reason: "width is 0 or unreadable")
         }
 
-        let height = readBigEndianUInt32(data, offset: 20)
-        guard height > 0 else {
-            return .invalid(reason: "height is 0")
+        guard let height = data.readBigEndianUInt32(at: 20), height > 0 else {
+            return .invalid(reason: "height is 0 or unreadable")
         }
 
         return .valid

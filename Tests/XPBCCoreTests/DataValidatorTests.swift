@@ -269,6 +269,56 @@ struct DataValidatorTests {
         #expect(DataValidator.validate(data, as: .pdf) != .valid)
     }
 
+    @Test func pdf_keywordAsPrefix_noFalsePositive() {
+        // "/JSActions" should NOT trigger /JS detection (boundary check)
+        let content = "%PDF-1.4\n<< /JSActions 1 0 R >>"
+        let data = content.data(using: .utf8)!
+        #expect(DataValidator.validate(data, as: .pdf) == .valid)
+    }
+
+    @Test func pdf_AAAsPrefix_noFalsePositive() {
+        // "/AABattery" should NOT trigger /AA detection
+        let content = "%PDF-1.4\n<< /AABattery 1 >>"
+        let data = content.data(using: .utf8)!
+        #expect(DataValidator.validate(data, as: .pdf) == .valid)
+    }
+
+    @Test func pdf_keywordAtEndOfFile_fails() {
+        let content = "%PDF-1.4\n/JS"
+        let data = content.data(using: .utf8)!
+        #expect(DataValidator.validate(data, as: .pdf) != .valid)
+    }
+
+    // MARK: - Boundary value tests
+
+    @Test func png_exactMinimumSize_passes() {
+        var data = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x0D])
+        data.append(contentsOf: [0x49, 0x48, 0x44, 0x52])
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+        data.append(contentsOf: [0x08, 0x02, 0x00, 0x00, 0x00])
+        #expect(data.count == 29)
+        #expect(DataValidator.validate(data, as: .png) == .valid)
+    }
+
+    @Test func png_oneByteBelowMinimum_fails() {
+        var data = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x0D])
+        data.append(contentsOf: [0x49, 0x48, 0x44, 0x52])
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+        data.append(contentsOf: [0x08, 0x02, 0x00, 0x00]) // 28 bytes
+        #expect(DataValidator.validate(data, as: .png) != .valid)
+    }
+
+    @Test func ftyp_exactMinimumBoxSize_passes() {
+        // boxSize == 8, data.count == 8
+        let data = Data([0x00, 0x00, 0x00, 0x08,
+                         0x66, 0x74, 0x79, 0x70])
+        #expect(DataValidator.validate(data, as: .heic) == .valid)
+    }
+
     // MARK: - Text (no validation)
 
     @Test func text_alwaysValid() {

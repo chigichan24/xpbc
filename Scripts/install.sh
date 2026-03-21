@@ -7,6 +7,13 @@ ASSET_URL="https://github.com/$REPO/releases/latest/download/$ASSET_NAME"
 CHECKSUM_URL="https://github.com/$REPO/releases/latest/download/checksums.txt"
 INSTALL_DIR="${1:-$HOME/.local/bin}"
 
+# Clean up intermediate files on any exit
+cleanup() {
+  rm -f "$ASSET_NAME" checksums.txt
+  rm -rf extracted_files
+}
+trap cleanup EXIT
+
 # Validate install directory
 case "$INSTALL_DIR" in
   /*) ;;
@@ -25,25 +32,20 @@ curl -fsSL -o checksums.txt "$CHECKSUM_URL"
 echo "Verifying checksum..."
 shasum -a 256 -c checksums.txt --ignore-missing || {
   echo "Error: checksum verification failed!" >&2
-  rm -f "$ASSET_NAME" checksums.txt
   exit 1
 }
-rm checksums.txt
 
 unzip -qo "$ASSET_NAME" -d extracted_files
-rm "$ASSET_NAME"
 
 VERSION=$(ls ./extracted_files/xpbc.artifactbundle | sed -n 's/^xpbc-\([^-]*\)-macos$/\1/p' | head -n 1)
 if [ -z "$VERSION" ]; then
   echo "Error: version not found in the artifact bundle." >&2
-  rm -rf extracted_files
   exit 1
 fi
 
 mkdir -p "$INSTALL_DIR"
 cp -f "./extracted_files/xpbc.artifactbundle/xpbc-$VERSION-macos/bin/xpbc" "$INSTALL_DIR/xpbc"
 chmod +x "$INSTALL_DIR/xpbc"
-rm -rf extracted_files
 
 echo "Installed xpbc $VERSION to $INSTALL_DIR/xpbc"
 echo "Please make sure $INSTALL_DIR is in your \$PATH"

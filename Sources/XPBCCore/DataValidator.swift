@@ -1,21 +1,26 @@
 import Foundation
 
 public struct DataValidator: Sendable {
-    static let validators: [DataType: FormatValidator] = [
-        .png: PNGValidator(),
-        .jpeg: JPEGValidator(),
-        .gif: GIFValidator(),
-        .tiff: TIFFValidator(),
-        .bmp: BMPValidator(),
-        .webp: WebPValidator(),
-        .heic: FtypValidator(),
-        .avif: FtypValidator(),
-        .pdf: PDFValidator(),
-    ]
-
     public static func validate(_ data: Data, as type: DataType) -> ValidationResult {
-        guard type != .text else { return .valid }
-        guard let validator = validators[type] else { return .valid }
-        return validator.validate(data)
+        switch type {
+        case .text:
+            return .valid
+        case .png:
+            return PNGValidator().validate(data)
+        case .jpeg:
+            return JPEGValidator().validate(data)
+        case .gif:
+            return GIFValidator().validate(data)
+        case .tiff:
+            return TIFFValidator().validate(data)
+        case .bmp:
+            return BMPValidator().validate(data)
+        case .webp:
+            return WebPValidator().validate(data)
+        case .heic, .avif:
+            return FtypValidator().validate(data)
+        case .pdf:
+            return PDFValidator().validate(data)
+        }
     }
 }
