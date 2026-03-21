@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     runs-on: macos-15
@@ -30,5 +33,3 @@ jobs:
         with:
           files: |
             xpbc-macos.artifactbundle.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
