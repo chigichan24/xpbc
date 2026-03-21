@@ -3,7 +3,7 @@ import Foundation
 public struct DataTypeDetector: Sendable {
     // Ordered by magic byte specificity (longest/most-unique first).
     // BMP has only a 2-byte signature, so it is placed last to minimize false positives.
-    public static let detectors: [FormatDetector] = [
+    static let detectors: [FormatDetector] = [
         PNGDetector(),      // 8 bytes
         GIFDetector(),      // 6 bytes
         WebPDetector(),     // 4+4 bytes at offsets 0,8

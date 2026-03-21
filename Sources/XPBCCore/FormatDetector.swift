@@ -13,7 +13,7 @@ public enum DataType: Equatable, Sendable {
     case text
 }
 
-public protocol FormatDetector: Sendable {
+protocol FormatDetector: Sendable {
     var detectedType: DataType { get }
     func canDetect(from data: Data) -> Bool
 }
