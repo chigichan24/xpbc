@@ -26,7 +26,13 @@ echo "hello" | xpbc
 curl -fsSL https://raw.githubusercontent.com/chigichan24/xpbc/main/Scripts/install.sh | bash
 ```
 
-The script downloads the latest universal binary (arm64 + x86_64) and prompts you for the install directory (default: `~/.local/bin`).
+To install to a custom directory:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/chigichan24/xpbc/main/Scripts/install.sh | bash -s -- /your/custom/path
+```
+
+The default install directory is `~/.local/bin`.
 
 ### From source
 
