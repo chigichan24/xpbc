@@ -7,6 +7,7 @@ struct FtypDetector: FormatDetector {
     private static let ftypMagic: [UInt8] = [0x66, 0x74, 0x79, 0x70]
 
     init(detectedType: DataType, brand: [UInt8]) {
+        precondition(brand.count == 4, "brand must be exactly 4 bytes")
         self.detectedType = detectedType
         self.brand = brand
     }
