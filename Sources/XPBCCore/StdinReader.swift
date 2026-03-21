@@ -1,8 +1,8 @@
 import Foundation
 
 public struct StdinReader: Sendable {
-    public static let maxInputSize: Int = 100 * 1024 * 1024
-    public static var maxInputSizeMB: Int { maxInputSize / (1024 * 1024) }
+    static let maxInputSize: Int = 100 * 1024 * 1024
+    static var maxInputSizeMB: Int { maxInputSize / (1024 * 1024) }
 
     private static let chunkSize: Int = 64 * 1024
 
