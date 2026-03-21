@@ -15,8 +15,9 @@ trap cleanup EXIT
 echo "xpbc installer"
 echo ""
 
-# Ask user for install directory
-read -rp "Install directory [$DEFAULT_INSTALL_DIR]: " INSTALL_DIR
+# Read from /dev/tty so this works even when piped via curl | bash
+printf "Install directory [%s]: " "$DEFAULT_INSTALL_DIR"
+read -r INSTALL_DIR < /dev/tty || true
 INSTALL_DIR="${INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 
 # Expand ~ to $HOME
