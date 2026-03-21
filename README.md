@@ -20,25 +20,13 @@ echo "hello" | xpbc
 
 ## Installation
 
-### Pre-built binary
-
-Download the latest universal binary (arm64 + x86_64) from [Releases](https://github.com/chigichan24/xpbc/releases):
+### Installer script
 
 ```sh
-# Download and extract
-curl -LO https://github.com/chigichan24/xpbc/releases/latest/download/xpbc-macos.artifactbundle.zip
-unzip xpbc-macos.artifactbundle.zip
-
-# Copy to your PATH
-mkdir -p ~/.local/bin
-cp xpbc.artifactbundle/xpbc-*/bin/xpbc ~/.local/bin/
+curl -fsSL https://raw.githubusercontent.com/chigichan24/xpbc/main/Scripts/install.sh | bash
 ```
 
-Make sure `~/.local/bin` is in your `PATH`. If not, add to your shell profile:
-
-```sh
-export PATH="$HOME/.local/bin:$PATH"
-```
+The script downloads the latest universal binary (arm64 + x86_64) and prompts you for the install directory (default: `~/.local/bin`).
 
 ### From source
 
