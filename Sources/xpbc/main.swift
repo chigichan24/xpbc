@@ -74,9 +74,6 @@ func run() throws {
 
 do {
     try run()
-} catch let error as XPBCError {
-    printError(error.localizedDescription)
-    exit(1)
 } catch {
     printError(error.localizedDescription)
     exit(1)
