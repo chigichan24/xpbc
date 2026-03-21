@@ -15,7 +15,7 @@ public struct PasteboardWriter: Sendable {
         switch type {
         case .text:
             try writeText(data, to: pasteboard)
-        default:
+        case .png, .jpeg, .gif, .tiff, .bmp, .webp, .heic, .avif, .pdf:
             try writeImage(data, as: type, to: pasteboard)
         }
     }
