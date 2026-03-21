@@ -28,21 +28,6 @@ func printError(_ message: String) {
     FileHandle.standardError.write(Data("xpbc: \(message)\n".utf8))
 }
 
-func parsePasteboardName(_ name: String) throws -> NSPasteboard.Name {
-    switch name {
-    case "general":
-        return .general
-    case "ruler":
-        return NSPasteboard.Name("Apple CFPasteboard ruler")
-    case "find":
-        return .find
-    case "font":
-        return NSPasteboard.Name("Apple CFPasteboard font")
-    default:
-        throw XPBCError.invalidArgument("Unknown pasteboard: \(name)")
-    }
-}
-
 func run() throws {
     var pasteboardName: NSPasteboard.Name = .general
     let args = CommandLine.arguments.dropFirst()
@@ -60,7 +45,7 @@ func run() throws {
             guard let name = iterator.next() else {
                 throw XPBCError.invalidArgument("-pboard requires a value")
             }
-            pasteboardName = try parsePasteboardName(name)
+            pasteboardName = try .from(userInput: name)
         default:
             throw XPBCError.invalidArgument(arg)
         }
