@@ -13,7 +13,7 @@ public struct PasteboardWriter: Sendable {
 
         switch type {
         case .text:
-            let text = try decodeText(from: data)
+            let text = decodeText(from: data)
             pasteboard.clearContents()
             guard pasteboard.setString(text, forType: .string) else {
                 throw XPBCError.pasteboardWriteFailed
@@ -27,16 +27,15 @@ public struct PasteboardWriter: Sendable {
         }
     }
 
-    private func decodeText(from data: Data) throws -> String {
+    private func decodeText(from data: Data) -> String {
         if let utf8 = String(data: data, encoding: .utf8) {
             return utf8
-        } else if let latin1 = String(data: data, encoding: .isoLatin1) {
+        } else {
             FileHandle.standardError.write(
                 Data("xpbc: warning: input is not valid UTF-8, falling back to Latin-1\n".utf8)
             )
-            return latin1
-        } else {
-            throw XPBCError.pasteboardWriteFailed
+            // Latin-1 can decode any byte sequence, so this never returns nil
+            return String(data: data, encoding: .isoLatin1)!
         }
     }
 
