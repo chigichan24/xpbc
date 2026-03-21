@@ -10,21 +10,16 @@ public struct PasteboardWriter: Sendable {
 
     public func write(_ data: Data, as type: DataType) throws {
         let pasteboard = NSPasteboard(name: pasteboardName)
+        pasteboard.clearContents()
 
+        let success: Bool
         switch type {
         case .text:
-            let text = decodeText(from: data)
-            pasteboard.clearContents()
-            guard pasteboard.setString(text, forType: .string) else {
-                throw XPBCError.pasteboardWriteFailed
-            }
+            success = pasteboard.setString(decodeText(from: data), forType: .string)
         case .png, .jpeg, .gif, .tiff, .bmp, .webp, .heic, .avif, .pdf:
-            let pbType = pasteboardType(for: type)
-            pasteboard.clearContents()
-            guard pasteboard.setData(data, forType: pbType) else {
-                throw XPBCError.pasteboardWriteFailed
-            }
+            success = pasteboard.setData(data, forType: pasteboardType(for: type))
         }
+        guard success else { throw XPBCError.pasteboardWriteFailed }
     }
 
     private func decodeText(from data: Data) -> String {
