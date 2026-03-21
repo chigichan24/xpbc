@@ -1,9 +1,12 @@
 PREFIX ?= /usr/local
 
-.PHONY: build install test clean
+.PHONY: build build-universal install test clean
 
 build:
 	swift build -c release
+
+build-universal:
+	swift build -c release --arch arm64 --arch x86_64
 
 install: build
 	install -d $(PREFIX)/bin
