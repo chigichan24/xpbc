@@ -8,6 +8,8 @@ struct PDFValidator: FormatValidator {
         "/JS", "/JavaScript", "/OpenAction", "/AA", "/Launch",
     ]
 
+    // NOTE: This check does not cover hex-encoded PDF name objects (e.g., /#4A#53 for /JS).
+    // Full coverage would require decoding PDF name hex escapes before matching.
     func validate(_ data: Data) -> ValidationResult {
         // isoLatin1 can decode any byte sequence, so this guard is defensive only.
         guard let content = String(data: data, encoding: .ascii)

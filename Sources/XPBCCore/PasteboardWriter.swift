@@ -38,12 +38,15 @@ public struct PasteboardWriter: Sendable {
 
     /// Strip C0 control characters (except tab, newline, carriage return) and DEL
     /// to prevent terminal escape sequence injection.
+    /// Checks all Unicode scalars in each Character to handle multi-scalar graphemes.
     private func stripControlCharacters(_ text: String) -> String {
         text.filter { ch in
-            let v = ch.unicodeScalars.first!.value
-            if v == 0x09 || v == 0x0A || v == 0x0D { return true }
-            if v < 0x20 || v == 0x7F { return false }
-            return true
+            ch.unicodeScalars.allSatisfy { scalar in
+                let v = scalar.value
+                if v == 0x09 || v == 0x0A || v == 0x0D { return true }
+                if v < 0x20 || v == 0x7F { return false }
+                return true
+            }
         }
     }
 

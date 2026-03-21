@@ -217,7 +217,7 @@ struct DataValidatorTests {
     }
 
     @Test func ftyp_boxSizeTooSmall_fails() {
-        var data = Data([0x00, 0x00, 0x00, 0x04]) // size = 4 (< 8)
+        var data = Data([0x00, 0x00, 0x00, 0x08]) // size = 8 (< 12 minimum)
         data.append(contentsOf: [0x66, 0x74, 0x79, 0x70])
         data.append(contentsOf: [0x68, 0x65, 0x69, 0x63])
         #expect(DataValidator.validate(data, as: .heic) != .valid)
@@ -313,9 +313,10 @@ struct DataValidatorTests {
     }
 
     @Test func ftyp_exactMinimumBoxSize_passes() {
-        // boxSize == 8, data.count == 8
-        let data = Data([0x00, 0x00, 0x00, 0x08,
-                         0x66, 0x74, 0x79, 0x70])
+        // boxSize == 12, data.count == 12 (header 8 + major brand 4)
+        var data = Data([0x00, 0x00, 0x00, 0x0C]) // size = 12
+        data.append(contentsOf: [0x66, 0x74, 0x79, 0x70]) // "ftyp"
+        data.append(contentsOf: [0x68, 0x65, 0x69, 0x63]) // "heic" (major brand)
         #expect(DataValidator.validate(data, as: .heic) == .valid)
     }
 

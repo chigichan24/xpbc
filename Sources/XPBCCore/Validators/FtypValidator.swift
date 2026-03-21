@@ -9,8 +9,10 @@ struct FtypValidator: FormatValidator {
         // Per ISO BMFF, boxSize == 0 means "box extends to EOF" and boxSize == 1 means
         // "64-bit extended size follows". Both are valid but rejected here for simplicity
         // since typical ftyp boxes have a concrete small size.
-        guard boxSize >= 8 else {
-            return .invalid(reason: "ftyp box size \(boxSize) is less than minimum (8)")
+        // Minimum 12: box header (8) + major brand (4). Full ftyp also has minor_version (4)
+        // but we check for 12 as the bare minimum for a recognizable ftyp box.
+        guard boxSize >= 12 else {
+            return .invalid(reason: "ftyp box size \(boxSize) is less than minimum (12)")
         }
 
         guard Int(boxSize) <= data.count else {

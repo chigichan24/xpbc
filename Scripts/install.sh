@@ -42,6 +42,10 @@ if [ -z "$VERSION" ]; then
   echo "Error: version not found in the artifact bundle." >&2
   exit 1
 fi
+if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+  echo "Error: unexpected version format: $VERSION" >&2
+  exit 1
+fi
 
 mkdir -p "$INSTALL_DIR"
 cp -f "./extracted_files/xpbc.artifactbundle/xpbc-$VERSION-macos/bin/xpbc" "$INSTALL_DIR/xpbc"
