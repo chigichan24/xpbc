@@ -30,7 +30,15 @@ public struct PasteboardWriter: Sendable {
                 Data("xpbc: warning: input is not valid UTF-8, falling back to Latin-1\n".utf8)
             )
             // Latin-1 can decode any byte sequence, so this never returns nil
-            return String(data: data, encoding: .isoLatin1)!
+            let raw = String(data: data, encoding: .isoLatin1)!
+            // Strip control characters to prevent terminal escape sequence injection.
+            // Allow printable characters + tab (0x09), newline (0x0A), carriage return (0x0D).
+            return raw.filter { ch in
+                let v = ch.unicodeScalars.first!.value
+                if v == 0x09 || v == 0x0A || v == 0x0D { return true }
+                if v < 0x20 || v == 0x7F { return false }
+                return true
+            }
         }
     }
 
